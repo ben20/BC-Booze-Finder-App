@@ -15,7 +15,7 @@
     <LinearLayout
         android:id="@+id/map_button_bar"
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        android:layout_height="45dp"
         android:background="@drawable/plot_button_bar"
         android:clickable="true" >
 

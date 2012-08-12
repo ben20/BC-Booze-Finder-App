@@ -6,6 +6,9 @@ public class LiquorStoreLocation {
     private String address;
     private LatLng latLng;
     private String phoneNumber;
+    private String storeNumber;
+    private String name;
+    private String postalCode;
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -37,10 +40,6 @@ public class LiquorStoreLocation {
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
-    private String storeNumber;
-    private String name;
-    private String postalCode;
-
     public LiquorStoreLocation(String city, String address) {
         this.city = city;
         this.address = address;
@@ -80,6 +79,15 @@ public class LiquorStoreLocation {
     }
     public double getLng() {
         return latLng.getLng();
+    }
+    
+    public String getInformation() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name + ", " + storeNumber + "\n\n");
+        sb.append(address + ", " + city + "\n");
+        sb.append(phoneNumber + "\n");
+        return sb.toString();
+        
     }
 
 }

@@ -32,6 +32,12 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
+import de.android1.overlaymanager.ManagedOverlay;
+import de.android1.overlaymanager.ManagedOverlayGestureDetector;
+import de.android1.overlaymanager.ManagedOverlayItem;
+import de.android1.overlaymanager.OverlayManager;
+import de.android1.overlaymanager.ZoomEvent;
+
 public class MyMapActivity extends MapActivity implements LocationListener {
 
     private static final String TAG = "MyMapActivity";
@@ -44,6 +50,7 @@ public class MyMapActivity extends MapActivity implements LocationListener {
 
     private MapView map;
     private LocationManager locationManager;
+    private OverlayManager overlayManager;
 
     private double starting_lat = 49.223451;
     private double starting_lng = -122.998514;
@@ -53,7 +60,6 @@ public class MyMapActivity extends MapActivity implements LocationListener {
     private ConcreteItemizedOverlay BCLiquorStoreOverlay;
     private ConcreteItemizedOverlay currentPositionOverlay;
 
-    private Overlay touchOverlay;
     private MapController mapController;
     private List<Overlay> mapOverlays;
 
@@ -68,14 +74,14 @@ public class MyMapActivity extends MapActivity implements LocationListener {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.my_map_activity);
-
+        
         mapButtonBar = (LinearLayout) findViewById(R.id.map_button_bar);
         map = (MapView) findViewById(R.id.mapview);
 
         mapController = map.getController();
         mapOverlays = map.getOverlays();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        touchOverlay = new TouchEventOverlay(this);
+        overlayManager = new OverlayManager(getApplication(), map);
 
         Drawable red_drawable = this.getResources().getDrawable(R.drawable.ic_action_location_red);
         Drawable blue_drawable = this.getResources()
@@ -93,8 +99,8 @@ public class MyMapActivity extends MapActivity implements LocationListener {
         mapOverlays.add(privateLiquorStoreOverlay);
         mapOverlays.add(BCLiquorStoreOverlay);
         mapOverlays.add(currentPositionOverlay);
-        mapOverlays.add(touchOverlay);
-        // TODO: Add overlay for BC Liquor store
+
+        createTouchEventOverlay();
 
         parsePrivateLiquorStoreFile();
         parseBCLiquorStoreFile();
@@ -106,7 +112,7 @@ public class MyMapActivity extends MapActivity implements LocationListener {
 
     @Override
     public void onResume() {
-        
+
         SharedPreferences state = getSharedPreferences(STATE, MODE_PRIVATE);
         if (state.contains(LATITUDE) == true) {
             GeoPoint point = new GeoPoint(state.getInt(LATITUDE, 0), state.getInt(LONGITUDE, 0));
@@ -199,7 +205,7 @@ public class MyMapActivity extends MapActivity implements LocationListener {
         editor.putInt(LATITUDE, point.getLatitudeE6());
         editor.putInt(LONGITUDE, point.getLongitudeE6());
         editor.commit();
-        
+
         clearAllOverlays();
 
         plotGeopointLocaton(currentPositionOverlay, "Current Location", "", point);
@@ -246,9 +252,9 @@ public class MyMapActivity extends MapActivity implements LocationListener {
     }
 
     private void plotBCLiquorStore(LiquorStoreLocation ls) {
-        String address = ls.getAddress();
+        String information = ls.getInformation();
         GeoPoint point = new LatLngPoint(ls.getLat(), ls.getLng());
-        plotGeopointLocaton(BCLiquorStoreOverlay, " BC Liquor Store", address, point);
+        plotGeopointLocaton(BCLiquorStoreOverlay, " BC Liquor Store", information, point);
     }
 
     private void gotoGeopointOnMap(GeoPoint point) {
@@ -335,61 +341,71 @@ public class MyMapActivity extends MapActivity implements LocationListener {
         });
     }
 
-    class TouchEventOverlay extends Overlay {
+    public void createTouchEventOverlay() {
+        ManagedOverlay managedOverlay = overlayManager.createOverlay("touchOverlay");
 
-        int x;
-        int y;
-        MyMapActivity mapActivity;
-        GeoPoint point;
-        MapView map;
-
-        public TouchEventOverlay(MyMapActivity ma) {
-            super();
-            this.mapActivity = ma;
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent e, final MapView map) {
-
-            this.map = map;
-            if (e.getAction() == MotionEvent.ACTION_DOWN) {
-                startPress = e.getEventTime();
-                x = (int) e.getX();
-                y = (int) e.getY();
-
-                point = map.getProjection().fromPixels(x, y);
-            }
-
-            if (e.getAction() == MotionEvent.ACTION_UP)
-                stopPress = e.getEventTime();
-
-            if ((stopPress - startPress) > 1000) {
-
-                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MyMapActivity.this);
-                alertBuilder.setCancelable(true);
-                alertBuilder.setMessage("Show liquor stores at this location");
-                alertBuilder.setPositiveButton("Plot", new OnClickListener() {
+        managedOverlay
+                .setOnOverlayGestureListener(new ManagedOverlayGestureDetector.OnOverlayGestureListener() {
 
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        plotLocationOfInterestAndClosest(point);
+                    public boolean onZoom(ZoomEvent arg0, ManagedOverlay arg1) {
+                        return false;
                     }
-                });
-                alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+                    public boolean onSingleTap(MotionEvent arg0, ManagedOverlay arg1,
+                            GeoPoint arg2, ManagedOverlayItem arg3) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onScrolled(MotionEvent arg0, MotionEvent arg1, float arg2,
+                            float arg3, ManagedOverlay arg4) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onLongPressFinished(MotionEvent arg0, ManagedOverlay arg1,
+                            GeoPoint arg2, ManagedOverlayItem arg3) {
+
+                    }
+
+                    @Override
+                    public void onLongPress(MotionEvent arg0, ManagedOverlay arg1) {
+
+                    }
+
+                    @Override
+                    public boolean onDoubleTap(MotionEvent arg0, ManagedOverlay arg1,
+                            final GeoPoint arg2, ManagedOverlayItem arg3) {
+
+                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+                                MyMapActivity.this);
+                        alertBuilder.setCancelable(true);
+                        alertBuilder.setMessage("Show liquor stores at this location");
+                        alertBuilder.setPositiveButton("Plot", new OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                plotLocationOfInterestAndClosest(arg2);
+                            }
+                        });
+                        alertBuilder.setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        AlertDialog alert = alertBuilder.create();
+                        alert.show();
+                        return false;
                     }
                 });
-
-                AlertDialog alert = alertBuilder.create();
-                alert.show();
-
-            }
-            return false;
-        }
+        overlayManager.populate();
     }
 
     @Override

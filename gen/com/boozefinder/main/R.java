@@ -797,10 +797,11 @@ containing a value of this type.
         public static final int ic_action_pin_red=0x7f02005a;
         public static final int ic_action_search=0x7f02005b;
         public static final int ic_launcher=0x7f02005c;
-        public static final int plot_button_bar=0x7f02005d;
+        public static final int menu_map=0x7f02005d;
+        public static final int plot_button_bar=0x7f02005e;
     }
     public static final class id {
-        public static final int BC_liquor_store_main_holder=0x7f04002c;
+        public static final int BC_liquor_store_main_holder=0x7f04002e;
         public static final int abs__action_bar=0x7f040022;
         public static final int abs__action_bar_container=0x7f040021;
         public static final int abs__action_bar_subtitle=0x7f040011;
@@ -830,19 +831,22 @@ containing a value of this type.
         public static final int abs__title=0x7f04001b;
         public static final int abs__titleDivider=0x7f04001c;
         public static final int abs__up=0x7f04000b;
-        public static final int blue_marker_main=0x7f040029;
-        public static final int current_person_main_holder=0x7f040028;
+        public static final int blue_marker_main=0x7f04002b;
+        public static final int current_person_main_holder=0x7f04002a;
         public static final int disableHome=0x7f040009;
-        public static final int green_marker_main=0x7f04002d;
+        public static final int green_marker_main=0x7f04002f;
         public static final int homeAsUp=0x7f040006;
         public static final int listMode=0x7f040002;
-        public static final int main_menu_map_button=0x7f040027;
-        public static final int map_button_bar=0x7f04002f;
-        public static final int mapview=0x7f04002e;
-        public static final int menu_settings=0x7f040030;
+        public static final int main_menu_action_bar=0x7f040027;
+        public static final int main_menu_map_button=0x7f040029;
+        public static final int main_menu_text=0x7f040030;
+        public static final int map_button_bar=0x7f040032;
+        public static final int mapview=0x7f040031;
+        public static final int menu_map=0x7f040028;
+        public static final int menu_settings=0x7f040033;
         public static final int normal=0x7f040001;
-        public static final int private_liquor_store_main_holder=0x7f04002a;
-        public static final int red_marker_main=0x7f04002b;
+        public static final int private_liquor_store_main_holder=0x7f04002c;
+        public static final int red_marker_main=0x7f04002d;
         public static final int showCustom=0x7f040008;
         public static final int showHome=0x7f040005;
         public static final int showTitle=0x7f040007;
@@ -917,6 +921,7 @@ containing a value of this type.
         public static final int action_green_title=0x7f09000f;
         public static final int action_red_title=0x7f09000e;
         public static final int app_name=0x7f09000a;
+        public static final int main_menu_help=0x7f090010;
         public static final int menu_settings=0x7f09000b;
         public static final int title_activity_main=0x7f09000c;
     }
