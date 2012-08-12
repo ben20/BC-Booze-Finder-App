@@ -4,4 +4,7 @@
     <color name="black">#000000</color>
     <color name="charcoal">#222222</color>
 	<color name="light_grey">#e4e5e7</color>
+	<color name="transparent_black">#80000000</color>
+		<color name="transparent_black_2">#8F000000</color>
+	
 </resources>

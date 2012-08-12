@@ -592,13 +592,15 @@ containing a value of this type.
         public static final int abs__bright_foreground_inverse_holo_dark=0x7f060006;
         public static final int abs__bright_foreground_inverse_holo_light=0x7f060007;
         public static final int abs__holo_blue_light=0x7f060008;
-        public static final int abs__primary_text_disable_only_holo_dark=0x7f06000d;
-        public static final int abs__primary_text_disable_only_holo_light=0x7f06000e;
-        public static final int abs__primary_text_holo_dark=0x7f06000f;
-        public static final int abs__primary_text_holo_light=0x7f060010;
+        public static final int abs__primary_text_disable_only_holo_dark=0x7f06000f;
+        public static final int abs__primary_text_disable_only_holo_light=0x7f060010;
+        public static final int abs__primary_text_holo_dark=0x7f060011;
+        public static final int abs__primary_text_holo_light=0x7f060012;
         public static final int black=0x7f06000a;
         public static final int charcoal=0x7f06000b;
         public static final int light_grey=0x7f06000c;
+        public static final int transparent_black=0x7f06000d;
+        public static final int transparent_black_2=0x7f06000e;
         public static final int white=0x7f060009;
     }
     public static final class dimen {
@@ -789,12 +791,16 @@ containing a value of this type.
         public static final int abs__tab_unselected_pressed_holo=0x7f020054;
         public static final int androidmarker=0x7f020055;
         public static final int ic_action_location_blue=0x7f020056;
-        public static final int ic_action_pin_blue=0x7f020057;
-        public static final int ic_action_pin_red=0x7f020058;
-        public static final int ic_action_search=0x7f020059;
-        public static final int ic_launcher=0x7f02005a;
+        public static final int ic_action_location_green=0x7f020057;
+        public static final int ic_action_location_red=0x7f020058;
+        public static final int ic_action_pin_blue=0x7f020059;
+        public static final int ic_action_pin_red=0x7f02005a;
+        public static final int ic_action_search=0x7f02005b;
+        public static final int ic_launcher=0x7f02005c;
+        public static final int plot_button_bar=0x7f02005d;
     }
     public static final class id {
+        public static final int BC_liquor_store_main_holder=0x7f04002c;
         public static final int abs__action_bar=0x7f040022;
         public static final int abs__action_bar_container=0x7f040021;
         public static final int abs__action_bar_subtitle=0x7f040011;
@@ -824,15 +830,19 @@ containing a value of this type.
         public static final int abs__title=0x7f04001b;
         public static final int abs__titleDivider=0x7f04001c;
         public static final int abs__up=0x7f04000b;
+        public static final int blue_marker_main=0x7f040029;
+        public static final int current_person_main_holder=0x7f040028;
         public static final int disableHome=0x7f040009;
+        public static final int green_marker_main=0x7f04002d;
         public static final int homeAsUp=0x7f040006;
         public static final int listMode=0x7f040002;
         public static final int main_menu_map_button=0x7f040027;
-        public static final int map_button_bar=0x7f04002a;
-        public static final int mapview=0x7f040029;
-        public static final int menu_settings=0x7f04002b;
+        public static final int map_button_bar=0x7f04002f;
+        public static final int mapview=0x7f04002e;
+        public static final int menu_settings=0x7f040030;
         public static final int normal=0x7f040001;
-        public static final int parsing_test=0x7f040028;
+        public static final int private_liquor_store_main_holder=0x7f04002a;
+        public static final int red_marker_main=0x7f04002b;
         public static final int showCustom=0x7f040008;
         public static final int showHome=0x7f040005;
         public static final int showTitle=0x7f040007;
@@ -903,10 +913,12 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abs__shareactionprovider_share_with_application=0x7f090009;
+        public static final int action_blue_title=0x7f09000d;
+        public static final int action_green_title=0x7f09000f;
+        public static final int action_red_title=0x7f09000e;
         public static final int app_name=0x7f09000a;
-        public static final int hello_world=0x7f09000b;
-        public static final int menu_settings=0x7f09000c;
-        public static final int title_activity_main=0x7f09000d;
+        public static final int menu_settings=0x7f09000b;
+        public static final int title_activity_main=0x7f09000c;
     }
     public static final class style {
         public static final int AppTheme=0x7f0a0058;

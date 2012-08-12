@@ -1,6 +1,7 @@
 package com.boozefinder.main;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
@@ -21,6 +23,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -32,32 +35,33 @@ import com.google.android.maps.OverlayItem;
 public class MyMapActivity extends MapActivity implements LocationListener {
 
     private static final String TAG = "MyMapActivity";
+    private static final String STATE = "MyMapActivityState";
+    private static final String LATITUDE = "Latitude";
+    private static final String LONGITUDE = "Longitude";
 
-    private List<LiquorStoreLocation> addresses = new ArrayList<LiquorStoreLocation>();
+    private List<LiquorStoreLocation> privateLiquorStores = new ArrayList<LiquorStoreLocation>();
+    private List<LiquorStoreLocation> BCLiquorStores = new ArrayList<LiquorStoreLocation>();
 
     private MapView map;
     private LocationManager locationManager;
 
-    // set the starting point at Metrotown in Burnaby BC
     private double starting_lat = 49.223451;
     private double starting_lng = -122.998514;
     private GeoPoint start_point = new LatLngPoint(starting_lat, starting_lng);
 
-    private ConcreteItemizedOverlay itemizedoverlay;
+    private ConcreteItemizedOverlay privateLiquorStoreOverlay;
+    private ConcreteItemizedOverlay BCLiquorStoreOverlay;
     private ConcreteItemizedOverlay currentPositionOverlay;
-    private Overlay touchOverlay;
 
+    private Overlay touchOverlay;
     private MapController mapController;
-    private GeoPoint currentPoint;
+    private List<Overlay> mapOverlays;
 
     private LinearLayout mapButtonBar;
 
     private long startPress;
     private long stopPress;
-
     private String towers;
-
-    private List<Overlay> mapOverlays;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,64 +70,55 @@ public class MyMapActivity extends MapActivity implements LocationListener {
         setContentView(R.layout.my_map_activity);
 
         mapButtonBar = (LinearLayout) findViewById(R.id.map_button_bar);
-        initMapButtonBarListener();
-
         map = (MapView) findViewById(R.id.mapview);
+
         mapController = map.getController();
         mapOverlays = map.getOverlays();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        map.setBuiltInZoomControls(true);
-
-        Drawable red_drawable = this.getResources().getDrawable(R.drawable.ic_action_pin_red);
-        Drawable blue_drawable = this.getResources()
-                .getDrawable(R.drawable.ic_action_location_blue);
-
-        itemizedoverlay = new ConcreteItemizedOverlay(red_drawable, this);
-        currentPositionOverlay = new ConcreteItemizedOverlay(blue_drawable, this);
-
-        gotoGeopointOnMap(start_point);
-        // initPlotCurrentLocation();
-
         touchOverlay = new TouchEventOverlay(this);
 
-        mapOverlays.add(itemizedoverlay);
+        Drawable red_drawable = this.getResources().getDrawable(R.drawable.ic_action_location_red);
+        Drawable blue_drawable = this.getResources()
+                .getDrawable(R.drawable.ic_action_location_blue);
+        Drawable green_drawable = this.getResources().getDrawable(
+                R.drawable.ic_action_location_green);
+        privateLiquorStoreOverlay = new ConcreteItemizedOverlay(red_drawable, this);
+        currentPositionOverlay = new ConcreteItemizedOverlay(blue_drawable, this);
+        BCLiquorStoreOverlay = new ConcreteItemizedOverlay(green_drawable, this);
+
+        map.setBuiltInZoomControls(true);
+        gotoGeopointOnMap(start_point);
+        mapController.setZoom(13);
+
+        mapOverlays.add(privateLiquorStoreOverlay);
+        mapOverlays.add(BCLiquorStoreOverlay);
         mapOverlays.add(currentPositionOverlay);
         mapOverlays.add(touchOverlay);
+        // TODO: Add overlay for BC Liquor store
 
-        parseLiquorStoreFile();
+        parsePrivateLiquorStoreFile();
+        parseBCLiquorStoreFile();
+        initMapButtonBarListener();
+
+        towers = locationManager.getBestProvider(new Criteria(), false);
+        locationManager.requestLocationUpdates(towers, 500, 10, this);
     }
 
     @Override
     public void onResume() {
+        
+        SharedPreferences state = getSharedPreferences(STATE, MODE_PRIVATE);
+        if (state.contains(LATITUDE) == true) {
+            GeoPoint point = new GeoPoint(state.getInt(LATITUDE, 0), state.getInt(LONGITUDE, 0));
+            plotLocationOfInterestAndClosest(point);
+        }
         super.onResume();
-        Criteria criteria = new Criteria();
-        towers = locationManager.getBestProvider(criteria, false);
-
-        Log.d(TAG, "Towers: " + towers);
-        locationManager.requestLocationUpdates(towers, 500, 1, this);
     }
 
-    private void plotCurrentLocation(Location location) {
-
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
-        currentPoint = new LatLngPoint(lat, lng);
-
-        currentPositionOverlay.clearOverlays();
-        OverlayItem overlayItem = new OverlayItem(currentPoint, "Current Location", "");
-        currentPositionOverlay.addOverlay(overlayItem);
-        gotoGeopointOnMap(currentPoint);
-
-        GeoPoint point = new LatLngPoint(location.getLatitude(), location.getLongitude());
-
-        itemizedoverlay.clearOverlays();
-        List<LiquorStoreLocation> lsls = findXClosest(10, point, addresses);
-
-        try {
-            for (LiquorStoreLocation lsl : lsls)
-                plotLiquorStore(lsl);
-        } catch (NullPointerException e) {
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
     }
 
     /**
@@ -132,7 +127,7 @@ public class MyMapActivity extends MapActivity implements LocationListener {
      * 
      * @return
      */
-    private void parseLiquorStoreFile() {
+    private void parsePrivateLiquorStoreFile() {
 
         String line;
         String dataLine[];
@@ -151,58 +146,113 @@ public class MyMapActivity extends MapActivity implements LocationListener {
                 double lng = Double.parseDouble(dataLine[2]);
 
                 ls = new LiquorStoreLocation(address, lat, lng);
-                addresses.add(ls);
+                privateLiquorStores.add(ls);
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.d(TAG, "Error: " + e.getMessage());
         }
+    }
 
-        List<LiquorStoreLocation> lsls = findXClosest(10, currentPoint, addresses);
+    private void parseBCLiquorStoreFile() {
+
+        String line;
+        String dataLine[];
+        LiquorStoreLocation ls;
 
         try {
-            for (LiquorStoreLocation lsl : lsls)
-                plotLiquorStore(lsl);
-        } catch (NullPointerException e) {
+            AssetManager am = getAssets();
+            InputStream is = am.open("ls-latlng_BCL.txt");
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
 
+            while ((line = br.readLine()) != null) {
+                dataLine = line.split("\t");
+                String address = dataLine[0];
+                double lat = Double.parseDouble(dataLine[2]);
+                double lng = Double.parseDouble(dataLine[3]);
+
+                ls = new LiquorStoreLocation(address, lat, lng);
+                ls.setCity(dataLine[1]);
+                ls.setStoreNumber(dataLine[4]);
+                ls.setName(dataLine[5]);
+                ls.setPostalCode(dataLine[6]);
+                ls.setPhoneNumber(dataLine[7]);
+
+                BCLiquorStores.add(ls);
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "Error" + e.getMessage());
         }
+    }
+
+    private void clearAllOverlays() {
+        currentPositionOverlay.clearOverlays();
+        privateLiquorStoreOverlay.clearOverlays();
+        BCLiquorStoreOverlay.clearOverlays();
+    }
+
+    private void plotLocationOfInterestAndClosest(GeoPoint point) {
+
+        SharedPreferences state = getSharedPreferences(STATE, MODE_PRIVATE);
+        SharedPreferences.Editor editor = state.edit();
+        editor.putInt(LATITUDE, point.getLatitudeE6());
+        editor.putInt(LONGITUDE, point.getLongitudeE6());
+        editor.commit();
+        
+        clearAllOverlays();
+
+        plotGeopointLocaton(currentPositionOverlay, "Current Location", "", point);
+        gotoGeopointOnMap(point);
+
+        List<LiquorStoreLocation> private_ls = findXClosest(5, point, privateLiquorStores);
+        List<LiquorStoreLocation> BC_ls = findXClosest(5, point, BCLiquorStores);
+
+        try {
+            for (LiquorStoreLocation lsl : private_ls)
+                plotPrivateLiquorStore(lsl);
+
+            for (LiquorStoreLocation lsl : BC_ls)
+                plotBCLiquorStore(lsl);
+        } catch (NullPointerException e) {
+            Log.d(TAG, e.getMessage());
+        }
+
+        map.invalidate();
     }
 
     /**
-     * Plots the given lat/lng
+     * 
+     * @param overlay
+     *            overlay to plot this geopoint
+     * @param information
+     *            information stored in the dialog message field
+     * @param point
+     *            is the geopoint to be plotted
+     * @param type
+     *            is the type of liquor store and is stored as the dialog title
+     * 
      */
-    private void plotGeopoint(String address, double lat, double lng) {
-        try {
-            GeoPoint geopoint = new LatLngPoint(lat, lng);
-
-            OverlayItem overlayitem = new OverlayItem(geopoint, "PRIVATE", address);
-
-            itemizedoverlay.addOverlay(overlayitem);
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-        }
+    private void plotGeopointLocaton(ConcreteItemizedOverlay overlay, String type,
+            String information, GeoPoint point) {
+        OverlayItem overlayItem = new OverlayItem(point, type, information);
+        overlay.addOverlay(overlayItem);
     }
 
-    private void plotGeoPoint(GeoPoint point) {
-        try {
-            currentPositionOverlay.clearOverlays();
-            OverlayItem overlayItem = new OverlayItem(point, "Location", "");
-            currentPositionOverlay.addOverlay(overlayItem);
-        } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
-        }
-    }
-
-    private void plotLiquorStore(LiquorStoreLocation ls) {
+    private void plotPrivateLiquorStore(LiquorStoreLocation ls) {
         String address = ls.getAddress();
-        double lat = ls.getLat();
-        double lng = ls.getLng();
-        plotGeopoint(address, lat, lng);
+        GeoPoint point = new LatLngPoint(ls.getLat(), ls.getLng());
+        plotGeopointLocaton(privateLiquorStoreOverlay, "Private Liquor Store", address, point);
+    }
+
+    private void plotBCLiquorStore(LiquorStoreLocation ls) {
+        String address = ls.getAddress();
+        GeoPoint point = new LatLngPoint(ls.getLat(), ls.getLng());
+        plotGeopointLocaton(BCLiquorStoreOverlay, " BC Liquor Store", address, point);
     }
 
     private void gotoGeopointOnMap(GeoPoint point) {
-        mapController.setCenter(point);
-        mapController.setZoom(13);
+        mapController.animateTo(point);
     }
 
     @Override
@@ -215,7 +265,6 @@ public class MyMapActivity extends MapActivity implements LocationListener {
         if (location != null) {
             LiquorStoreLocation closest = null;
             double approxLat = listOfLs.get(0).getLat();
-            // initialize the mindist value to the maximum possible value
             double minDistValue = Double.MAX_VALUE;
 
             double loc_lat = location.getLatitudeE6() / 1E6;
@@ -240,11 +289,7 @@ public class MyMapActivity extends MapActivity implements LocationListener {
         if (location != null) {
             List<LiquorStoreLocation> closest = new ArrayList<LiquorStoreLocation>();
             List<LiquorStoreLocation> liquorStoreLocations = new ArrayList<LiquorStoreLocation>(
-                    addresses);
-            //
-            // for (LiquorStoreLocation ls : addresses) {
-            // liquorStoreLocations.add(ls);
-            // }
+                    listOfLs);
 
             for (int i = 0; i < x; i++) {
                 LiquorStoreLocation lsl = findClosest(location, liquorStoreLocations);
@@ -254,7 +299,6 @@ public class MyMapActivity extends MapActivity implements LocationListener {
                     liquorStoreLocations.remove(lsl);
                 }
             }
-
             return closest;
         }
         return null;
@@ -276,25 +320,17 @@ public class MyMapActivity extends MapActivity implements LocationListener {
 
             @Override
             public void onClick(View v) {
-                Criteria criteria = new Criteria();
-                towers = locationManager.getBestProvider(criteria, false);
 
                 Location location = locationManager.getLastKnownLocation(towers);
 
-                System.out.println("clicked first");
                 if (location != null) {
-                    System.out.println("clicked inside: " + location.getLatitude());
-                    plotCurrentLocation(location);
+                    plotLocationOfInterestAndClosest(new LatLngPoint(location.getLatitude(),
+                            location.getLongitude()));
+                } else {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "Location cannot be found.", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
-
-                // ie location is null.
-                else {
-                    Location location1 = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    plotCurrentLocation(location1);
-                }
-
-                System.out.println("clicked");
             }
         });
     }
@@ -336,18 +372,8 @@ public class MyMapActivity extends MapActivity implements LocationListener {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mapActivity.plotGeoPoint(point);
 
-                        mapActivity.itemizedoverlay.clearOverlays();
-                        List<LiquorStoreLocation> lsls = mapActivity.findXClosest(10, point,
-                                addresses);
-
-                        try {
-                            for (LiquorStoreLocation lsl : lsls)
-                                plotLiquorStore(lsl);
-                        } catch (NullPointerException e) {
-                        }
-                        map.invalidate();
+                        plotLocationOfInterestAndClosest(point);
                     }
                 });
                 alertBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -368,25 +394,20 @@ public class MyMapActivity extends MapActivity implements LocationListener {
 
     @Override
     public void onLocationChanged(Location arg0) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        // TODO Auto-generated method stub
-
     }
 }

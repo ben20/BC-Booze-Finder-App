@@ -16,19 +16,20 @@
         android:id="@+id/map_button_bar"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:background="#80000000"
+        android:background="@drawable/plot_button_bar"
         android:clickable="true" >
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:orientation="horizontal" >
 
             <ImageButton
-                android:layout_marginLeft="20dp"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_action_location_blue" />
 
@@ -36,9 +37,10 @@
                 android:layout_width="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_height="wrap_content"
-                android:text="Plot current location"
-                android:textSize="16dp"
-                android:textColor="@color/light_grey" />
+                android:text="PLOT CURRENT LOCATION"
+                android:textSize="14dp"
+                android:textColor="@color/light_grey" 
+                android:paddingRight="5dp"/>
         </LinearLayout>
     </LinearLayout>
 

@@ -10,6 +10,7 @@ import org.apache.http.HttpRequest;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +22,8 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
+    private static final String MAP_STATE = "MyMapActivityState";
+
     private TextView test_tv;
 
     @Override
@@ -29,7 +32,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         Button mapButton = (Button) findViewById(R.id.main_menu_map_button);
-        test_tv = (TextView) findViewById(R.id.parsing_test);
 
         mapButton.setOnClickListener(new OnClickListener() {
 
@@ -39,5 +41,12 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(MainActivity.this, MyMapActivity.class));
             }
         });
+    }
+    
+    @Override
+    public void onDestroy() {
+        SharedPreferences state = getSharedPreferences(MAP_STATE, 0);
+        state.edit().clear().commit();
+        super.onDestroy();
     }
 }
