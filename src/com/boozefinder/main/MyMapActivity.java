@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
@@ -22,9 +23,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.WazaBe.HoloEverywhere.HoloAlertDialogBuilder;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -64,9 +67,8 @@ public class MyMapActivity extends MapActivity implements LocationListener {
     private List<Overlay> mapOverlays;
 
     private LinearLayout mapButtonBar;
+    private ImageButton mapInfoButton;
 
-    private long startPress;
-    private long stopPress;
     private String towers;
 
     @Override
@@ -75,8 +77,9 @@ public class MyMapActivity extends MapActivity implements LocationListener {
 
         setContentView(R.layout.my_map_activity);
         
-        mapButtonBar = (LinearLayout) findViewById(R.id.map_button_bar);
+        mapButtonBar = (LinearLayout) findViewById(R.id.map_button);
         map = (MapView) findViewById(R.id.mapview);
+        mapInfoButton = (ImageButton) findViewById(R.id.map_info_button);
 
         mapController = map.getController();
         mapOverlays = map.getOverlays();
@@ -88,9 +91,9 @@ public class MyMapActivity extends MapActivity implements LocationListener {
                 .getDrawable(R.drawable.ic_action_location_blue);
         Drawable green_drawable = this.getResources().getDrawable(
                 R.drawable.ic_action_location_green);
-        privateLiquorStoreOverlay = new ConcreteItemizedOverlay(red_drawable, this);
+        privateLiquorStoreOverlay = new ConcreteItemizedOverlay(green_drawable, this);
         currentPositionOverlay = new ConcreteItemizedOverlay(blue_drawable, this);
-        BCLiquorStoreOverlay = new ConcreteItemizedOverlay(green_drawable, this);
+        BCLiquorStoreOverlay = new ConcreteItemizedOverlay(red_drawable, this);
 
         map.setBuiltInZoomControls(true);
         gotoGeopointOnMap(start_point);
@@ -104,7 +107,7 @@ public class MyMapActivity extends MapActivity implements LocationListener {
 
         parsePrivateLiquorStoreFile();
         parseBCLiquorStoreFile();
-        initMapButtonBarListener();
+        initMapButtonBarListeners();
 
         towers = locationManager.getBestProvider(new Criteria(), false);
         locationManager.requestLocationUpdates(towers, 500, 10, this);
@@ -319,7 +322,7 @@ public class MyMapActivity extends MapActivity implements LocationListener {
         return diff;
     }
 
-    private void initMapButtonBarListener() {
+    private void initMapButtonBarListeners() {
         mapButtonBar.setClickable(true);
 
         mapButtonBar.setOnClickListener(new android.view.View.OnClickListener() {
@@ -337,6 +340,14 @@ public class MyMapActivity extends MapActivity implements LocationListener {
                             "Location cannot be found.", Toast.LENGTH_SHORT);
                     toast.show();
                 }
+            }
+        });
+        
+        mapInfoButton.setOnClickListener(new android.view.View.OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyMapActivity.this, HelpActivity.class));
             }
         });
     }
@@ -379,10 +390,11 @@ public class MyMapActivity extends MapActivity implements LocationListener {
                     public boolean onDoubleTap(MotionEvent arg0, ManagedOverlay arg1,
                             final GeoPoint arg2, ManagedOverlayItem arg3) {
 
-                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+                        HoloAlertDialogBuilder alertBuilder = new HoloAlertDialogBuilder(
                                 MyMapActivity.this);
                         alertBuilder.setCancelable(true);
-                        alertBuilder.setMessage("Show liquor stores at this location");
+                        alertBuilder.setTitle("Plot");
+                        alertBuilder.setMessage("Find liquor stores near this location");
                         alertBuilder.setPositiveButton("Plot", new OnClickListener() {
 
                             @Override

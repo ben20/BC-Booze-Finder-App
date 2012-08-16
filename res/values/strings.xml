@@ -3,9 +3,11 @@
     <string name="app_name">BC Booze Finder</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">BC Booze Finder</string>
-    <string name="action_blue_title">CURRENT LOCATION</string>
-    <string name="action_red_title">PRIVATE LIQUOR STORE</string>
-    <string name="action_green_title">BC LIQUOR STORE</string>
+    <string name="action_blue_title">Current Location</string>
+    <string name="action_red_title">BC Liquor Store</string>
+    <string name="action_green_title">Private liquor store</string>
     <string name="main_menu_help">BC Booze Finder does not guarantee the pinpoint accuracy of the information provided. \n\n This information is provided by the Province of British Columbia under the Open Government License for Government of BC Information v.BC1.0.</string>
-
+	<string name="map_button_text">Click to start</string>
+	<string name="main_menu_help">•\tTap \'Find Location\' to find your location and liquor stores nearby \n\n•\tDouble tap anywhere to plot that spot\n\n•\tClick on markers to find out information about that liquor store  </string>
+	<string name="about_help">BC Booze Finder is an app to help find liquor stores in British Columbia by using the data provided by http://www.data.gov.bc.ca/.\n\nThis information is provided by the Province of British Columbia under the Open Government License for Government of BC Information v.BC1.0 </string>
 </resources>

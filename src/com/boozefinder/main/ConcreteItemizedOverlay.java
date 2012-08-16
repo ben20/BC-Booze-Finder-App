@@ -3,13 +3,14 @@ package com.boozefinder.main;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import com.WazaBe.HoloEverywhere.HoloAlertDialogBuilder;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 
+@SuppressWarnings("rawtypes")
 public class ConcreteItemizedOverlay extends ItemizedOverlay {
 
     private List<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
@@ -44,10 +45,10 @@ public class ConcreteItemizedOverlay extends ItemizedOverlay {
     @Override
     protected boolean onTap(int index) {
         OverlayItem item = mOverlays.get(index);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+        HoloAlertDialogBuilder dialog = new HoloAlertDialogBuilder(mContext);
         dialog.setTitle(item.getTitle());
         dialog.setMessage(item.getSnippet());
-        dialog.show();
+        dialog.create().show();
         return true;
     }
     

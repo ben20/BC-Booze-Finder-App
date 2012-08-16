@@ -8,13 +8,13 @@
         android:targetSdkVersion="15" />
 
     <application
-        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:icon="@drawable/logo"
         android:theme="@style/Theme.Sherlock.NoActionBar" >
         <uses-library android:name="com.google.android.maps" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".MyMapActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,13 +26,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="android.app.NativeActivity" />
         </activity>
-        <activity android:name="MyMapActivity" >
+
+        <activity android:name="HelpActivity" >
         </activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 </manifest>

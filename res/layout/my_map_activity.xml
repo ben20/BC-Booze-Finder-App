@@ -16,32 +16,54 @@
         android:id="@+id/map_button_bar"
         android:layout_width="fill_parent"
         android:layout_height="45dp"
-        android:background="@drawable/plot_button_bar"
-        android:clickable="true" >
+        android:background="@color/transparent_black" >
 
-        <LinearLayout
-            android:layout_gravity="center"
-            android:gravity="center"
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:orientation="horizontal" >
+            android:layout_height="fill_parent"
+            android:background="@android:color/transparent" >
 
             <ImageButton
+                android:id="@+id/map_info_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_action_location_blue" />
+                android:layout_height="fill_parent"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/plot_button_bar"
+                android:clickable="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/ic_action_help" />
 
-            <TextView
+            <LinearLayout
+                android:id="@+id/map_button"
                 android:layout_width="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_height="wrap_content"
-                android:text="PLOT CURRENT LOCATION"
-                android:textSize="14dp"
-                android:textColor="@color/light_grey" 
-                android:paddingRight="5dp"/>
-        </LinearLayout>
+                android:layout_height="fill_parent"
+                android:layout_centerInParent="true"
+                android:background="@drawable/plot_button_bar"
+                android:clickable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" >
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:src="@drawable/ic_action_location_white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10dp"
+                    android:text="Find Location"
+                    android:textColor="@color/white"
+                    android:textSize="18dp" />
+            </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 </FrameLayout>

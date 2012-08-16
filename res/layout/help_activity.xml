@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white" >
+
+        <LinearLayout
+            android:id="@+id/help_header_legend_holder"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:orientation="vertical" >
+
+            <TextView
+                style="@style/help_header_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:background="@drawable/help_screen_title"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="LEGEND" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/current_person_main_holder"
+            style="@style/help_layout_holder"
+            android:layout_below="@id/help_header_legend_holder"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp" >
+
+            <ImageView
+                android:id="@+id/blue_marker_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_location_blue" />
+
+            <TextView
+                android:id="@id/blue_marker_main"
+                style="@style/help_text"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="30dp"
+                android:text="@string/action_blue_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/private_liquor_store_main_holder"
+            style="@style/help_layout_holder"
+            android:layout_below="@id/current_person_main_holder"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp" >
+
+            <ImageView
+                android:id="@+id/red_marker_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_location_red" />
+
+            <TextView
+                android:id="@id/red_marker_main"
+                style="@style/help_text"
+                android:layout_marginLeft="30dp"
+                android:text="@string/action_red_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/BC_liquor_store_main_holder"
+            style="@style/help_layout_holder"
+            android:layout_below="@id/private_liquor_store_main_holder"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp" >
+
+            <ImageView
+                android:id="@+id/green_marker_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_location_green" />
+
+            <TextView
+                android:id="@id/green_marker_main"
+                style="@style/help_text"
+                android:layout_marginLeft="30dp"
+                android:text="@string/action_green_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/help_header_how_holder"
+            style="@style/help_layout_holder"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/BC_liquor_store_main_holder"
+            android:orientation="vertical"
+            android:paddingTop="20dp" >
+
+            <TextView
+                style="@style/help_header_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/help_screen_title"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="HOW" />
+
+            <TextView
+                style="@style/help_text"
+                android:text="@string/main_menu_help" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/help_header_about_holder"
+            style="@style/help_layout_holder"
+            android:layout_below="@id/help_header_how_holder"
+            android:orientation="vertical" >
+
+            <TextView
+                style="@style/help_header_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/help_screen_title"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="ABOUT" />
+
+            <TextView
+                style="@style/help_text"
+                android:text="@string/about_help" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</ScrollView>
